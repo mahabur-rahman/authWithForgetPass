@@ -24,7 +24,7 @@ const Register = () => {
   };
 
   // handleClick
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
     const { fname, email, password, cpassword } = inputValue;
 
@@ -46,7 +46,33 @@ const Register = () => {
     } else if (password !== cpassword) {
       alert("pass and cpass not match");
     } else {
-      console.log("user register successfull");
+      // console.log("user register successfull");
+      const data = await fetch(`http://localhost:5000/api/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fname,
+          email,
+          password,
+          cpassword,
+        }),
+      });
+
+      const res = await data.json();
+
+      if (res.status === 201) {
+        alert("Register successful!");
+      }
+
+      setInputValue({
+        ...inputValue,
+        fname: "",
+        email: "",
+        password: "",
+        cpassword: "",
+      });
     }
   };
 
