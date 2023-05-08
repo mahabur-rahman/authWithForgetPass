@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const [toggle, setToggle] = useState(false);
@@ -30,24 +32,48 @@ const Register = () => {
 
     // validation of input field
     if (fname === "") {
-      alert("Name is required!");
+      // alert("Name is required!");
+      toast.warning("name is required", {
+        position: "top-center",
+      });
     } else if (email === "") {
-      alert("Email is required!");
+      // alert("Email is required!");
+      toast.error("email is required", {
+        position: "top-center",
+      });
     } else if (!email.includes("@")) {
-      alert("includes @ in your email");
+      // alert("includes @ in your email");
+      toast.warning("includes @ in your email", {
+        position: "top-center",
+      });
     } else if (password === "") {
-      alert("password is required");
+      // alert("password is required");
+      toast.error("password is required", {
+        position: "top-center",
+      });
     } else if (password.length < 6) {
-      alert("password must be 6 char");
+      // alert("password must be 6 char");
+      toast.error("password must be 6 char", {
+        position: "top-center",
+      });
     } else if (cpassword === "") {
-      alert("password is required");
+      // alert("cpassword is required");
+      toast.error("cpassword is required", {
+        position: "top-center",
+      });
     } else if (cpassword.length < 6) {
-      alert("confirm password must be 6 char");
+      // alert("confirm password must be 6 char");
+      toast.error("confirm password must be 6 char", {
+        position: "top-center",
+      });
     } else if (password !== cpassword) {
-      alert("pass and cpass not match");
+      // alert("pass and cpass not match");
+      toast.error("pass and cpass not match", {
+        position: "top-center",
+      });
     } else {
       // console.log("user register successfull");
-      const data = await fetch(`http://localhost:5000/api/users/register`, {
+      const data = await fetch(`/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +89,10 @@ const Register = () => {
       const res = await data.json();
 
       if (res.status === 201) {
-        alert("Register successful!");
+        // alert("Register successful!");
+        toast.success("Registration successful", {
+          position: "top-center",
+        });
       }
 
       setInputValue({
@@ -149,6 +178,9 @@ const Register = () => {
               Already have an account? <NavLink to="/">Log In</NavLink>
             </p>
           </form>
+
+          {/* react toastify */}
+          <ToastContainer />
         </div>
       </section>
     </>
