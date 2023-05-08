@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const bcrypt = require("bcryptjs");
 const UserDb = require("../models/UserSchema");
+const authenticate = require("../middleware/authenticate");
 
 // registration
 router.post("/register", async (req, res) => {
@@ -83,6 +84,19 @@ router.post("/login", async (req, res) => {
     }
   } catch (err) {
     return res.status(401).json(error);
+  }
+});
+
+// user valid
+router.get("/validuser", authenticate, async (req, res) => {
+  try {
+    const validUserOne = await UserDb.findOne({ _id: req.userId });
+   return res.status(201).json({status: 201, validUserOne})
+  } catch (err) {
+    return res.status(401).json({
+      status: 401,
+      err,
+    });
   }
 });
 
