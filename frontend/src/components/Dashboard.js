@@ -1,44 +1,75 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "./ContextProvider";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 const Dashboard = () => {
+  const [data, setData] = useState(false);
   // use context data
   const { loginData, setLoginData } = useContext(LoginContext);
 
   const history = useNavigate();
 
-  const DashboardValidUser = async () => {
+  const DashboardValid = async () => {
     let token = localStorage.getItem("usersdatatoken");
-    // console.log(token);
 
-    const res = await fetch(`/validuser`, {
+    const res = await fetch("/validuser", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: token,
+        Authorization: token,
       },
     });
 
     const data = await res.json();
-    // console.log(data);
-    if (data.status === 401 || !data) {
+
+    if (data.status == 401 || !data) {
       history("*");
     } else {
-      console.log(`User verify`);
+      console.log("user verify");
       setLoginData(data);
       history("/dashboard");
     }
   };
 
   useEffect(() => {
-    DashboardValidUser();
+    setTimeout(() => {
+      DashboardValid();
+      setData(true);
+    }, 2000);
   }, []);
 
   return (
     <>
-      <img src="./man.jpg" style={{ width: "200px", marginTop: 20 }} alt="" />
-      <h1>User Email: {loginData ? loginData.validUserOne?.email : ""}</h1>
+      {data ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="./man.png"
+            style={{ width: "200px", marginTop: 20 }}
+            alt=""
+          />
+          <h1>User Email:{loginData ? loginData.validUserOne?.email : ""}</h1>
+        </div>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          Loading... &nbsp;
+          <CircularProgress />
+        </Box>
+      )}
     </>
   );
 };
