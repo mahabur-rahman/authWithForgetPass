@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
+import { LoginContext } from "./ContextProvider";
 
 const Header = () => {
+  const { loginData, setLoginData } = useContext(LoginContext);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -25,16 +28,29 @@ const Header = () => {
           </NavLink>
 
           <div className="avtar">
-            <Avatar
-              onClick={handleClick}
-              style={{
-                background: "salmon",
-                fontWeight: "bold",
-                textTransform: "capitalize",
-              }}
-            >
-              M
-            </Avatar>
+            {loginData ? (
+              <Avatar
+                onClick={handleClick}
+                style={{
+                  background: "salmon",
+                  fontWeight: "bold",
+                  textTransform: "capitalize",
+                }}
+              >
+                {loginData.validUserOne.fname[0].toUpperCase()}
+              </Avatar>
+            ) : (
+              <Avatar
+                onClick={handleClick}
+                style={{
+                  background: "salmon",
+                  fontWeight: "bold",
+                  textTransform: "capitalize",
+                }}
+              >
+                M
+              </Avatar>
+            )}
           </div>
 
           <Menu

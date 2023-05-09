@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { LoginContext } from "./ContextProvider";
 
 const Dashboard = () => {
+  // use context data
+  const { loginData, setLoginData } = useContext(LoginContext);
+
   const history = useNavigate();
 
   const DashboardValidUser = async () => {
@@ -22,6 +26,7 @@ const Dashboard = () => {
       history("*");
     } else {
       console.log(`User verify`);
+      setLoginData(data);
       history("/dashboard");
     }
   };
@@ -33,7 +38,7 @@ const Dashboard = () => {
   return (
     <>
       <img src="./man.jpg" style={{ width: "200px", marginTop: 20 }} alt="" />
-      <h1>User Email: user@gmail.com</h1>
+      <h1>User Email: {loginData.validUserOne?.email}</h1>
     </>
   );
 };
