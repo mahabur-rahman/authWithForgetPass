@@ -4,9 +4,12 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
 import { LoginContext } from "./ContextProvider";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { loginData, setLoginData } = useContext(LoginContext);
+
+  const history = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -17,6 +20,41 @@ const Header = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  // logout user
+  const logoutuser = async () => {
+    let token = localStorage.getItem("usersdatatoken");
+
+    const res = await fetch("/logout", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (data.status === 201) {
+      console.log("use logout");
+      localStorage.removeItem("usersdatatoken");
+      setLoginData(false);
+      history("/");
+    } else {
+      console.log("error");
+    }
+  };
+
+  const goDash = () => {
+    history("/dashboard");
+  };
+
+  const goError = () => {
+    history("*");
   };
 
   return (
@@ -32,7 +70,7 @@ const Header = () => {
               <Avatar
                 onClick={handleClick}
                 style={{
-                  background: "salmon",
+                  background: "blue",
                   fontWeight: "bold",
                   textTransform: "capitalize",
                 }}
@@ -43,13 +81,11 @@ const Header = () => {
               <Avatar
                 onClick={handleClick}
                 style={{
-                  background: "salmon",
+                  background: "red",
                   fontWeight: "bold",
                   textTransform: "capitalize",
                 }}
-              >
-                M
-              </Avatar>
+              />
             )}
           </div>
 
@@ -62,10 +98,35 @@ const Header = () => {
               "aria-labelledby": "basic-button",
             }}
           >
-            <>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Logout</MenuItem>
-            </>
+            {loginData.validUserOne ? (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    goDash();
+                    handleClose();
+                  }}
+                >
+                  Profile
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    logoutuser();
+                  }}
+                >
+                  Logout
+                </MenuItem>
+              </>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  goError();
+                  handleClose();
+                }}
+              >
+                Profile
+              </MenuItem>
+            )}
           </Menu>
         </nav>
       </header>

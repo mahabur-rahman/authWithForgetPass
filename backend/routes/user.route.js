@@ -91,12 +91,31 @@ router.post("/login", async (req, res) => {
 router.get("/validuser", authenticate, async (req, res) => {
   try {
     const validUserOne = await UserDb.findOne({ _id: req.userId });
-   return res.status(201).json({status: 201, validUserOne})
+    return res.status(201).json({ status: 201, validUserOne });
   } catch (err) {
     return res.status(401).json({
       status: 401,
       err,
     });
+  }
+});
+
+// user logout
+router.get("/logout", authenticate, async (req, res) => {
+  try {
+    req.rootUser.tokens = req.rootUser.tokens.filter((currEle) => {
+      return currEle.token !== req.token;
+    });
+
+    res.clearCookie("usercookie", { path: "/" });
+
+    req.rootUser.save();
+
+    return res
+      .status(201)
+      .json({ status: 201, message: "User logout successful" });
+  } catch (err) {
+    return res.status(401).json({ status: 401, err });
   }
 });
 

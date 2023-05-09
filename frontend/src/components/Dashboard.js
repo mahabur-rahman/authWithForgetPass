@@ -38,7 +38,7 @@ const Dashboard = () => {
   return (
     <>
       <img src="./man.jpg" style={{ width: "200px", marginTop: 20 }} alt="" />
-      <h1>User Email: {loginData.validUserOne?.email}</h1>
+      <h1>User Email: {loginData ? loginData.validUserOne?.email : ""}</h1>
     </>
   );
 };
