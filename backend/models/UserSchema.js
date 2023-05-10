@@ -40,6 +40,10 @@ const UserSchema = new mongoose.Schema({
       },
     },
   ],
+
+  verifytoken: {
+    type: String
+  }
 });
 
 // here password hash

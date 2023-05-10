@@ -1,8 +1,10 @@
 import { useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 
 const PasswordReset = () => {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
   // onchange
   const setVal = (e) => {
@@ -12,7 +14,35 @@ const PasswordReset = () => {
   const sendLink = async (e) => {
     e.preventDefault();
 
-    //  api call
+    if (email === "") {
+      toast.error(`Email is required`, {
+        position: "top-center",
+      });
+    } else if (!email.includes("@")) {
+      toast.warning(`includes @ in your email`, {
+        position: "top-center",
+      });
+    } else {
+      //  api call
+      const res = await fetch(`/sendpasswordlink`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (data.status === 201) {
+        setEmail("");
+        setMessage(true);
+      } else {
+        toast.error("Invalid User", {
+          position: "top-center",
+        });
+      }
+    }
   };
 
   return (
@@ -22,6 +52,14 @@ const PasswordReset = () => {
           <div className="form_heading">
             <h1>Enter Your Email</h1>
           </div>
+
+          {message ? (
+            <p style={{ color: "green" }}>
+              Password reset link send successfully in your email
+            </p>
+          ) : (
+            ""
+          )}
 
           <form>
             <div className="form_input">

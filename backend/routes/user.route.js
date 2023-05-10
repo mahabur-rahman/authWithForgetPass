@@ -4,6 +4,18 @@ const bcrypt = require("bcryptjs");
 const UserDb = require("../models/UserSchema");
 const authenticate = require("../middleware/authenticate");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+
+const keysecret = process.env.JWT_SECRET;
+
+// email config for reset password
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
 
 // registration
 router.post("/register", async (req, res) => {
@@ -122,7 +134,58 @@ router.get("/logout", authenticate, async (req, res) => {
 
 // send email link for reset password
 router.post("/sendpasswordlink", async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
+  const { email } = req.body;
+
+  if (!email) {
+    return res
+      .status(401)
+      .json({ status: 401, message: "Enter your email properly!" });
+  }
+
+  try {
+    const userFind = await UserDb.findOne({ email: email });
+    // console.log(userFind);
+
+    // token generate for reset password
+    const token = jwt.sign({ _id: userFind._id }, keysecret, {
+      expiresIn: "120s",
+    });
+
+    // console.log(token);
+
+    const setUserToken = await UserDb.findByIdAndUpdate(
+      { _id: userFind._id },
+      { verifytoken: token },
+      { new: true }
+    );
+
+    // console.log(`setUsertoken `, setUserToken);
+
+    if (setUserToken) {
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Sending email for password reset",
+        text: `This link valid for 2 minutes http://localhost:3000/forgotpassword/${userFind._id}/${setUserToken.verifytoken}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return res
+            .status(401)
+            .json({ status: 401, message: "email not send" });
+        } else {
+          console.log(`email sent: `, info.response);
+          return res
+            .status(201)
+            .json({ status: 201, message: "email sent successful" });
+        }
+      });
+    }
+  } catch (err) {
+    return res.status(401).json({ status: 401, message: "Invalid user" });
+  }
 });
 
 module.exports = router;
