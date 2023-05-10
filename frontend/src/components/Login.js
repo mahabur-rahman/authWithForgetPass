@@ -123,6 +123,9 @@ const Login = () => {
             <p>
               Don't have an Account? <Link to="/register">Sign Up</Link>
             </p>
+            <p style={{ color: "black", fontWeight: "bold" }}>
+              Forget Password <Link to="/password-reset">Click Here</Link>
+            </p>
           </form>
 
           {/* react toastify */}

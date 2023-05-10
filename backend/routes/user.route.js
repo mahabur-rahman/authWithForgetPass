@@ -3,6 +3,7 @@ const router = new express.Router();
 const bcrypt = require("bcryptjs");
 const UserDb = require("../models/UserSchema");
 const authenticate = require("../middleware/authenticate");
+const nodemailer = require("nodemailer");
 
 // registration
 router.post("/register", async (req, res) => {
@@ -117,6 +118,11 @@ router.get("/logout", authenticate, async (req, res) => {
   } catch (err) {
     return res.status(401).json({ status: 401, err });
   }
+});
+
+// send email link for reset password
+router.post("/sendpasswordlink", async (req, res) => {
+  console.log(req.body);
 });
 
 module.exports = router;

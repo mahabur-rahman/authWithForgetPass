@@ -14,6 +14,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Error from "./components/Error";
 import Dashboard from "./components/Dashboard";
 import { LoginContext } from "./components/ContextProvider";
+import ForgotPassword from "./components/ForgotPassword";
+import PasswordReset from "./components/PasswordReset";
 
 function App() {
   const [data, setData] = useState(false);
@@ -60,6 +62,11 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/password-reset" element={<PasswordReset />} />
+            <Route
+              path="/forgotpassword/:id/:token"
+              element={<ForgotPassword />}
+            />
             <Route path="*" element={<Error />} />
           </Routes>
         </>
