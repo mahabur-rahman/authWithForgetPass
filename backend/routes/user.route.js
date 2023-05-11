@@ -188,4 +188,54 @@ router.post("/sendpasswordlink", async (req, res) => {
   }
 });
 
+// verify usre for forgot password time
+router.get("/forgotpassword/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  // console.log(id, token)
+
+  try {
+    const validUser = await UserDb.findOne({ _id: id, verifytoken: token });
+    // console.log(validUser);
+    const verifyToken = jwt.verify(token, keysecret);
+    // console.log(verifyToken);
+
+    if (validUser && verifyToken._id) {
+      return res.status(201).json({ status: 201, validUser });
+    } else {
+      return res.status(401).json({ status: 401, message: "User not exist!" });
+    }
+  } catch (err) {
+    return res.status(401).json({ status: 401, err });
+  }
+});
+
+// change password | new password
+router.post("/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  // console.log(id, token, password)
+
+  try {
+    const validUser = await UserDb.findOne({ _id: id, verifytoken: token });
+    // console.log(validUser);
+    const verifyToken = jwt.verify(token, keysecret);
+
+    if (validUser && verifyToken._id) {
+      const newPassword = await bcrypt.hash(password, 12);
+
+      const setNewUserPassword = await UserDb.findByIdAndUpdate(
+        { _id: id },
+        { password: newPassword }
+      );
+
+      setNewUserPassword.save();
+
+      return res.status(201).json({ status: 201, setNewUserPassword });
+    }
+  } catch (err) {
+    return res.status(401).json({ status: 401, err });
+  }
+});
+
 module.exports = router;
